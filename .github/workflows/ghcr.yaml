@@ -1,0 +1,69 @@
+
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches: [main]
+    # or tag pushes if you prefer: tags: ['v*']
+
+jobs:
+  build-and-push-archs:
+    strategy:
+      matrix:
+        include:
+          - machine: ubuntu-24.04
+            arch: amd64
+          - machine: ubuntu-24.04-arm
+            arch: arm64
+
+    runs-on: ${{ matrix.machine }}
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:latest-${{ matrix.arch }} .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/${{ github.repository }}:latest-${{ matrix.arch }}
+
+  build-final:
+    needs: build-and-push-archs
+
+    permissions:
+      contents: read
+      packages: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create unified manifest
+        run: |
+          docker manifest create ghcr.io/${{ github.repository }}:latest \
+            ghcr.io/${{ github.repository }}:latest-amd64 \
+            ghcr.io/${{ github.repository }}:latest-arm64
+
+      - name: Push Docker image
+        run: |
+          docker manifest push ghcr.io/${{ github.repository }}:latest

@@ -1,0 +1,4 @@
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y python3 python3-pip curl systemd
+ADD install-nix.sh /tmp/install-nix.sh
+RUN /tmp/install-nix.sh
