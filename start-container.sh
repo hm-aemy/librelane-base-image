@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Starting Nix daemon..."
+mkdir -p /nix/var/nix/daemon-socket
 
-exec nix daemon
+# Run the daemon using the local Nix store
+exec env NIX_REMOTE=local nix daemon
