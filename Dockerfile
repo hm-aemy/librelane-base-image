@@ -59,6 +59,33 @@ RUN curl --proto '=https' --tlsv1.2 -sSf \
     && cp /root/.cargo/bin/surfer /usr/local/bin/surfer \
     && rm -rf /root/.cargo /root/.rustup
 
+#Install Verilator
+ARG VERILATOR_VERSION=v5.050
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    autoconf \
+    make \
+    g++ \
+    flex \
+    bison \
+    perl \
+    python3 \
+    libfl-dev \
+    zlib1g-dev \
+    help2man \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth 1 --branch ${VERILATOR_VERSION} \
+        https://github.com/verilator/verilator.git /tmp/verilator \
+    && cd /tmp/verilator \
+    && autoconf \
+    && ./configure --prefix=/usr/local \
+    && make -j 2 \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/verilator
+
 # Container startup
 COPY start-container.sh /usr/local/bin/start-container.sh
 RUN chmod +x /usr/local/bin/start-container.sh
