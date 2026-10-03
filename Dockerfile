@@ -27,7 +27,9 @@ RUN apt-get update && apt-get install -y \
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
+
 ENV LIBGL_ALWAYS_SOFTWARE=1
+ENV PDK=ihp-sg13cmos5l
 
 # Enable sudo for the ubuntu user
 RUN usermod -aG sudo ubuntu \
