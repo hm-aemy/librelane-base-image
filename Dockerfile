@@ -19,9 +19,14 @@ RUN apt-get update && apt-get install -y \
     libegl1 \
     libwayland-egl1\
     locales \
-    locale-gen en_US.UTF-8 \
     sudo \
+    && locale-gen en_US.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
+
+# Locale configuration
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 # Enable sudo for the ubuntu user
 RUN usermod -aG sudo ubuntu \
