@@ -18,6 +18,8 @@ RUN apt-get update && apt-get install -y \
     libgl1 \
     libegl1 \
     libwayland-egl1\
+    locales \
+    locale-gen en_US.UTF-8 \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
