@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
     libxkbcommon-x11-0 \
     libgl1 \
     libegl1 \
+    libwayland-egl1\
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
