@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 # System dependencies
 RUN apt-get update && apt-get install -y \
@@ -34,57 +34,22 @@ RUN bash /tmp/install-nix.sh
 ENV PATH="/nix/var/nix/profiles/default/bin:${PATH}"
 ENV NIX_REMOTE="daemon"
 
-# Python dependencies
-RUN pip install "cocotb~=2.0" --break-system-packages
+# --------------------------------------------------
+# OSS CAD Suite
+# --------------------------------------------------
 
-# Install Surfer waveform viewer
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    ca-certificates \
-    git \
-    build-essential \
-    pkg-config \
-    libssl-dev \
-    libfontconfig1-dev \
-    libxkbcommon-dev \
-    libwayland-dev \
-    libasound2-dev \
-    && rm -rf /var/lib/apt/lists/*
+ARG OSS_CAD_VERSION=2026-09-30
 
-RUN curl --proto '=https' --tlsv1.2 -sSf \
-    https://sh.rustup.rs | sh -s -- -y --profile minimal \
-    && /root/.cargo/bin/cargo install \
-        --git https://gitlab.com/surfer-project/surfer.git \
-        surfer --locked \
-    && cp /root/.cargo/bin/surfer /usr/local/bin/surfer \
-    && rm -rf /root/.cargo /root/.rustup
+RUN set -eux; \
+    OSS_CAD_DATE="$(echo "$OSS_CAD_VERSION" | tr -d '-')"; \
+    OSS_CAD_URL="https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_CAD_VERSION}/oss-cad-suite-linux-x64-${OSS_CAD_DATE}.tgz"; \
+    curl -fL --retry 3 "$OSS_CAD_URL" -o /tmp/oss-cad-suite.tgz; \
+    mkdir -p /opt; \
+    tar -xzf /tmp/oss-cad-suite.tgz -C /opt; \
+    test -d /opt/oss-cad-suite/bin; \
+    rm /tmp/oss-cad-suite.tgz
 
-#Install Verilator
-ARG VERILATOR_VERSION=v5.050
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    git \
-    autoconf \
-    make \
-    g++ \
-    flex \
-    bison \
-    perl \
-    python3 \
-    libfl-dev \
-    zlib1g-dev \
-    help2man \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN git clone --depth 1 --branch ${VERILATOR_VERSION} \
-        https://github.com/verilator/verilator.git /tmp/verilator \
-    && cd /tmp/verilator \
-    && autoconf \
-    && ./configure --prefix=/usr/local \
-    && make -j 2 \
-    && make install \
-    && cd / \
-    && rm -rf /tmp/verilator
+ENV PATH="/opt/oss-cad-suite/bin:${PATH}"
 
 # Container startup
 COPY start-container.sh /usr/local/bin/start-container.sh
