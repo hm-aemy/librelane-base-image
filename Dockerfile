@@ -66,11 +66,11 @@ ENV PATH="/opt/oss-cad-suite/bin:${PATH}"
 # OpenXC7
 # --------------------------------------------------
 
-RUN git clone https://github.com/openXC7/toolchain-installer.git
-RUN cd toolchain-installer &&\
-    INSTALL_PREFIX="$HOME/opt/openxc7" \
-        ./toolchain-sources-builder.sh nextpnr prjxray fpga-as
-ENV PATH="/root/opt/openxc7/bin:${PATH}"
+RUN git clone https://github.com/openXC7/toolchain-installer.git && \
+    cd toolchain-installer && \
+    INSTALL_PREFIX=/opt/openxc7 \
+    ./toolchain-sources-builder.sh nextpnr prjxray fpga-as
+ENV PATH="/opt/openxc7/bin:${PATH}"
 
 
 # Container startup
