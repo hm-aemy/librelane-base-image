@@ -82,12 +82,12 @@ RUN mkdir -p /opt/openxc7/chipdb && \
         "${NEXTPNR_XILINX_DIR}/share/nextpnr/himbaechel/uarch/xilinx/gen/xilinx_gen.py" \
         --xray "${PRJXRAY_DB_DIR}/artix7" \
         --device xc7a50t \
-        --bba /opt/openxc7/chipdb/xc7a35ticsg324.bba
+        --bba /opt/openxc7/chipdb/xc7a100tcsg324.bba
 
 # Convert BBA to binary chip database
 RUN bbasm \
-    --l /opt/openxc7/chipdb/xc7a35ticsg324.bba \
-    /opt/openxc7/chipdb/xc7a35ticsg324.bin
+    --l /opt/openxc7/chipdb/xc7a100tcsg324.bba \
+    /opt/openxc7/chipdb/xc7a100tcsg324.bin
 
 # Container startup
 COPY start-container.sh /usr/local/bin/start-container.sh
