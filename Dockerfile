@@ -70,8 +70,24 @@ RUN git clone https://github.com/openXC7/toolchain-installer.git && \
     cd toolchain-installer && \
     INSTALL_PREFIX=/opt/openxc7 \
     ./toolchain-sources-builder.sh nextpnr prjxray fpga-as
-ENV PATH="/opt/openxc7/bin:${PATH}"
 
+ENV PATH="/opt/openxc7/venv/bin:/opt/openxc7/bin:${PATH}" \
+    NEXTPNR_XILINX_DIR="/opt/openxc7" \
+    NEXTPNR_XILINX_PYTHON_DIR="/opt/openxc7/lib/python" \
+    PRJXRAY_DB_DIR="/opt/openxc7/share/nextpnr/prjxray-db"
+
+# Generate Xilinx Artix-7 chip database
+RUN mkdir -p /opt/openxc7/chipdb && \
+    python3 \
+        "${NEXTPNR_XILINX_DIR}/share/nextpnr/himbaechel/uarch/xilinx/gen/xilinx_gen.py" \
+        --xray "${PRJXRAY_DB_DIR}/artix7" \
+        --device xc7a50t \
+        --bba /opt/openxc7/chipdb/xc7a35ticsg324.bba
+
+# Convert BBA to binary chip database
+RUN bbasm \
+    --l /opt/openxc7/chipdb/xc7a35ticsg324.bba \
+    /opt/openxc7/chipdb/xc7a35ticsg324.bin
 
 # Container startup
 COPY start-container.sh /usr/local/bin/start-container.sh
