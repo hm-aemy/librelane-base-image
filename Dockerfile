@@ -81,7 +81,7 @@ RUN mkdir -p /opt/openxc7/chipdb && \
     python3 \
         "${NEXTPNR_XILINX_DIR}/share/nextpnr/himbaechel/uarch/xilinx/gen/xilinx_gen.py" \
         --xray "${PRJXRAY_DB_DIR}/artix7" \
-        --device xc7a50t \
+        --device xc7a100t \
         --bba /opt/openxc7/chipdb/xc7a100tcsg324.bba
 
 # Convert BBA to binary chip database
